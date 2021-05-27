@@ -30,18 +30,22 @@ class HomePage {
     static container = document.getElementById('container');
     static renderMovies(movies) {
         movies.forEach(movie => {
+            const mainDiv = document.createElement("div");
+            mainDiv.className = 'item box col-lg-4 col-md-6';
             const movieDiv = document.createElement("div");
+            movieDiv.className = 'thumbnail';
             const movieImage = document.createElement("img");
             movieImage.src = `${movie.backdropUrl}`;
             const movieTitle = document.createElement("h3");
             movieTitle.textContent = `${movie.title}`;
-            movieImage.addEventListener("click", function() {
+            movieImage.addEventListener("click", function () {
                 Movies.run(movie);
             });
 
+            mainDiv.appendChild(movieDiv)
             movieDiv.appendChild(movieTitle);
             movieDiv.appendChild(movieImage);
-            this.container.appendChild(movieDiv);
+            this.container.appendChild(mainDiv);
         })
     }
 }

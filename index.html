@@ -11,29 +11,83 @@
     />
     <link rel="stylesheet" href="style.css" />
     <title>A&M | Movies Website</title>
+    <link rel="icon" href="./assets/imgs/favicon.png" />
   </head>
 
   <body>
-    <header class="nav-bar">
-      <nav class="row container margin-auto">
-        <div class="logo col-lg-6">
-          <img src="./assets/imgs/logo-dark.png" alt="" />
+    <header class="nav-bar" id="navbar">
+      <nav class="row container margin-auto flex align-center nav-bar-wrapper">
+        <div class="logo col-lg-2">
+          <img class="no-scroll" src="./assets/imgs/logo-light.png" alt="" />
+          <img class="on-scroll" src="./assets/imgs/logo-dark.png" alt="" />
         </div>
-        <div class="col-lg-6">
-          <ul class="flex">
-            <li><a href="index.html">Home</a></li>
-            <li>
-              <a href="">About <i class="fab fa-github"></i></a>
-            </li>
-            <li><a href="">Contact</a></li>
-          </ul>
-        </div>
-      </nav>
-    </header>
-    <div id="container" class="container margin-auto"></div>
 
-    <footer>footer</footer>
+       <div class="col-lg-10 row flex align-center links-search">
+         <div class="col-lg-1"></div>
+         <div class="col-lg-5 links">
+           <ul class="flex">
+             <li><a href="index.html">Home</a></li>
+             <li>
+               <a href="">who we are</i></a>
+              </li>
+              <li><a href="">Get i touch</a></li>
+            </ul>
+          </div>
+          <div class="search-bar-nav col-lg-6">
+            <form>
+              <input type="text" placeholder="Search Movie or Actor" />
+            </form>
+            <button><i class="fas fa-search"></i></button>
+          </div>
+        </div>
+        </nav>
+    </header>
+
+    <main>
+<div class="row container margin-auto">
+  <aside class="col-lg-3 side-bar" id="sidebar">
+    <h3 class="side-bar-title">
+      Chose Category
+    </h3>
+    
+    <hr>
+    
+  </aside>
+  <div class="col-lg-9">
+    <div id="container" class="margin-auto row items"></div>
+  </div>
+</div>
+</main>
+
+    <footer>
+      <div class="container row margin-auto">
+          <div class="col-lg-6">
+            <img src="https://lh3.googleusercontent.com/ogw/ADGmqu8x2C3o_Fez5M54wnadNakWhKwLDY-J812yYkQcE18=s32-c-mo" alt="">
+            <div class="col-lg-12">
+              <ul>
+                <li><a href="">Facebook</a></li>
+                <li><a href="">Facebook</a></li>
+                <li><a href="">Facebook</a></li>
+                <li><a href="">Facebook</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            Abd
+            <img src="" alt="">
+            <div class="col-lg-12">
+              <ul>
+                <li><a href="">Facebook</a></li>
+                <li><a href="">Facebook</a></li>
+                <li><a href="">Facebook</a></li>
+                <li><a href="">Facebook</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+    </footer>
     <script src="./oop-script.js"></script>
+    <script src="./scripts.js"></script>
     <script
       src="https://kit.fontawesome.com/a804a1ef46.js"
       crossorigin="anonymous"
