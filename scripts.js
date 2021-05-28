@@ -9,3 +9,17 @@ function myFunction() {
         navbar.classList.remove("sticky");
     }
 }
+
+
+// const buttons = document.querySelectorAll('#filter-movieActor button')
+
+// buttons.forEach(button => {
+//     button.addEventListener('click', () => {
+//         buttons.forEach(button => {
+//             button.classList.remove('active')
+//             button.addEventListener('click', (e) => {
+//                 e.target.classList.add('active')
+//             })
+//         })
+//     })
+// });

@@ -106,6 +106,7 @@ a {
 .sticky .nav-bar-wrapper .links-search .links li a {
   color: var(--dark);
 }
+.filter-button-movieActors:hover,
 .links li a:hover {
   text-decoration: none;
   color: rgb(202, 201, 201);
@@ -180,6 +181,21 @@ header.sticky {
   background-color: var(--secondary);
 }
 
+.filter-button-movieActors {
+  padding: 5px 20px;
+  border: none;
+  border-radius: 50px;
+  color: #fff;
+  background-color: var(--dark);
+}
+
+.active {
+  color: var(--primary);
+  background-color: #fff;
+}
+
+/* end sidebar */
+
 .item {
   cursor: pointer;
   padding: 5px;
@@ -213,6 +229,25 @@ footer {
   margin-top: 60px;
   padding: 30px 0;
   background-color: #fff;
+}
+
+.actors-section {
+  margin: 20px auto;
+}
+.actor-profile {
+  border-radius: 7px;
+  box-shadow: 0 0.25rem 0.25rem 0 rgba(170, 170, 170, 0.25);
+  margin: 0 0 12px 0;
+  width: 100%;
+}
+.actor-name {
+  font-size: 16px;
+  color: var(--dark);
+}
+
+.actor-character {
+  font-size: 16px;
+  color: var(--primary);
 }
 
 /* // Medium devices (tablets, 768px and up) */
