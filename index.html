@@ -26,7 +26,7 @@
 
        <div class="col-lg-10 row flex align-center links-search">
          <div class="col-lg-1"></div>
-<button class="burger-menu">burger</button>
+          <button class="burger-menu">burger</button>
          <div class="col-lg-5 links">
            <ul class="flex">
              <li><a href="index.html">Home</a></li>
@@ -37,31 +37,40 @@
             </ul>
           </div>
           <div class="search-bar-nav col-lg-6">
-            <form>
-              <input type="text" placeholder="Search Movie or Actor" />
-            </form>
-            <button><i class="fas fa-search"></i></button>
+              <input type="text" autocomplete="false" placeholder="Search Movie or Actor" id='term' />
+            <button id="search-btn"><i class="fas fa-search"></i></button>
           </div>
         </div>
         </nav>
     </header>
 
     <main>
-<div class="row container margin-auto">
+<div class="main row container margin-auto">
   <aside class="col-lg-3 side-bar" id="sidebar">
-    <h3 class="side-bar-title">
-      Chose Category
-    </h3>
-    <hr>
-    <div class="row">
-      <div id="filter-movieActor" class="col-lg-12">
-        <button id="get-movies" class="btn filter-button-movieActors acitve">Movies</button>
-        <button id="get-actors" class="btn filter-button-movieActors">Actors</button>
+    <div class="group-filter movie-actors">
+      <h3 class="side-bar-title">
+        Chose Category
+      </h3>
+      <hr>
+      <div class="row">
+        <div id="filter-movieActor" class="col-lg-12">
+          <button id="get-movies" class="btn filter-button-movieActors acitve">Movies</button>
+          <button id="get-actors" class="btn filter-button-movieActors">Actors</button>
+        </div>
       </div>
     </div>
-    
+    <div class="group-filter genres-sections">
+      <h3 class="side-bar-title mt-40">
+        Chose Genre
+      </h3>
+      <hr>
+      <div class="row">
+        <div id="filter-genre" class="col-lg-12">
+        </div>
+      </div>
+      </div>
   </aside>
-  <div class="col-lg-9">
+  <div class="col-lg-9 cards">
     <div id="container" class="margin-auto row items"></div>
   </div>
 </div>
