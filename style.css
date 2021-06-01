@@ -148,6 +148,13 @@ a {
   display: none;
 }
 
+main {
+  min-height: 100vh;
+}
+
+.width-full {
+  width: 100%;
+}
 #container {
   transition: all 0.5s ease-in-out;
 }
@@ -167,13 +174,18 @@ aside.hidden {
 .burger-menu {
   display: block;
 }
-
+#back:hover {
+  color: var(--primary);
+  /* font-size: 28px; */
+  transform: scale(1.05, 1.05);
+}
 #back {
   background-color: transparent;
   border: none;
   color: var(--dark);
-  font-size: 37px;
+  font-size: 26px;
   outline: none;
+  transition: all 0.2s ease-in-out;
 }
 /* display responsively */
 @media (min-width: 1200px) {
@@ -239,6 +251,17 @@ header.sticky {
   background-color: #fff;
 }
 
+.movie-company-logo {
+  /* margin: 50px 0 0 0; */
+  width: 100%;
+}
+
+#movie-backdrop {
+  border-radius: 7px;
+  box-shadow: 0 0.25rem 0.25rem 0 rgba(170, 170, 170, 0.25);
+  margin: 0 0 12px 0;
+  width: 100%;
+}
 /* end sidebar */
 
 .item {

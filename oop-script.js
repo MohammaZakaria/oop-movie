@@ -11,18 +11,19 @@ class App {
 
 class APIService {
     static TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-    static MOVIE_EDN_POINT = '&append_to_response=credits'
+    static MOVIE_EDN_POINT = '&append_to_response='
     static GENRES_EDN_POINT = '&with_genres='
     static QUERY_EDN_POINT = '&query='
     static async fetchMovies() {
-        const url = APIService._constructUrl(`movie/now_playing`)
+        const type = document.querySelector('#movies-type').value
+        const url = APIService._constructUrl(`movie/${type === '-' ? 'now_playing' : type}`)
         const response = await fetch(url)
         const data = await response.json()
         return data.results.map(movie => new Movie(movie))
     }
     static async fetchMovie(movieId) {
         const url = APIService._constructUrl(`movie/${movieId}`)
-        const response = await fetch(url + this.MOVIE_EDN_POINT)
+        const response = await fetch(url + this.MOVIE_EDN_POINT + 'credits')
         const data = await response.json()
         return new Movie(data)
     }
@@ -35,7 +36,7 @@ class APIService {
 
     static async fetchActor(actorId) {
         const url = APIService._constructUrl(`person/${actorId}`)
-        const response = await fetch(url + this.MOVIE_EDN_POINT)
+        const response = await fetch(url + this.MOVIE_EDN_POINT + 'credits')
         const data = await response.json()
         return new Actor(data)
     }
@@ -45,7 +46,7 @@ class APIService {
         const data = await response.json()
         return data.genres.map(genre => new Genre(genre))
     }
-
+    // recommendations
     static async fetchGenreMovies(genreId) {
         const url = APIService._constructUrl(`discover/movie`)
         const response = await fetch(url + this.GENRES_EDN_POINT + genreId)
@@ -55,10 +56,20 @@ class APIService {
 
     static async search(term) {
         const treatedTerm = term.replace(' ', '+')
-        const url = APIService._constructUrl(`search/movie`)
-        const response = await fetch(url + this.QUERY_EDN_POINT + treatedTerm)
-        const data = await response.json()
-        return data.results.map(movie => new Movie(movie))
+        const movieUrl = APIService._constructUrl(`search/movie`)
+        const actorUrl = APIService._constructUrl(`search/person`)
+        const moviesResponse = await fetch(movieUrl + this.QUERY_EDN_POINT + treatedTerm)
+        const actorResponse = await fetch(actorUrl + this.QUERY_EDN_POINT + treatedTerm)
+        const movieData = await moviesResponse.json()
+        const actorData = await actorResponse.json()
+        const movies = movieData.results.map(movie => new Movie(movie))
+        const actors = actorData.results.map(actor => new Actor(actor))
+        // const main = [...movies, ...actors]
+        // const result = []
+        // main.forEach((item, index) => {
+        //     result.push(actors[index], movies[index])
+        // })
+        return [...movies, ...actors]
     }
 
     static _constructUrl(path) {
@@ -131,6 +142,10 @@ class ItemPage {
     }
 }
 
+
+// `${item.languages[1] ? `, ${item.languages[1].name} ` : ''}
+// ${item.languages[2] ? `, ${item.languages[2].name} ` 
+
 class ItemSection {
     static renderItem(item) {
         const mainFlat = document.querySelector('.main');
@@ -138,47 +153,84 @@ class ItemSection {
         const mainView = mainFlat.querySelector('.cards')
         mainView.classList.remove('col-lg-9')
         mainView.classList.add('col-lg-12')
-
+        const [language1, language2, language3] = item.languages ? item.languages : [{ name: 'Language is not defined' }]
+        const director = item.type === 'movie' ? item.credits.crew.filter(person => {
+            if (person.job === 'Director') {
+                person.name
+                return person.name
+            }
+        }) : []
+        let companyName = 'Not Found'
+        let logo_url = './assets/imgs/no-logo.png'
+        if (item.type === "movie" && item.companies.length > 0) {
+            companyName = item.companies[0].name
+            if (item.companies[0].logo_path) {
+                logo_url = `http://image.tmdb.org/t/p/w780${item.companies[0].logo_path}`
+            }
+        }
         const info =
             `<p id="genres">
-                ${item.type === 'movie' ?
-                `Genre:  ${item.genres[0].name} 
-                ${item.genres[1] ? `/ ${item.genres[1].name} ` : ''}
-                ${item.genres[2] ? `/ ${item.genres[2].name} ` : ''}  ` :
+                ${item.type === 'movie' ? `Genre:  ${item.genres[0].name} ${item.genres[1] ? `/ ${item.genres[1].name} ` : ''}
+                ${item.genres[2] ? `/ ${item.genres[2].name} ` : ''} ` :
                 item.type === 'actor' && item.gender === 2 ?
                     'Gender: ' + `<i class="fas fa-venus"></i>` :
                     'Gender: ' + `<i class="fas fa-mars"></i>
             </p>`}`
 
         ItemPage.container.innerHTML = `<div class="row" >
-        <div class="col-lg-12 mtb-40"> <button onclick="getBack()" id="back"><i class="fas fa-arrow-left"></i></button></div>
+        <div class="col-lg-12 mtb-40">
+            <button onclick="getBack()" id="back">
+                <i class="fas fa-arrow-left"></i>
+                Back To Movies
+            </button>
+          </div>
         <div class="col-md-4">
           <img id="movie-backdrop" src=${item.backdropUrl}> 
-        </div>
-        <div class="col-md-8">
+          ${item.type === 'movie' ?
+                `<p class="mt-40">Production Company: ${companyName}</p>
+                <img class="movie-company-logo" src=${logo_url}> `
+                : ''}
+          </div>
+          <div class="col-md-8">
           <h2 id="movie-title">${item.type === 'movie' ? item.title : item.name}</h2>
-         ${info}
-          <p id="movie-release-date">${item.type === 'movie' ? 'Release Date: ' + item.releaseDate : 'Birth Date: ' + item.birthday}</p>
-          <p id="movie-runtime">${item.type === 'movie' ? 'Run Time: ' + item.runtime : 'Birth Place: ' + item.place_of_birth}</p>
-          <p id="movie-runtime">${item.type === 'movie' ? 'imbd rate ' : 'Popularity: ' + item.popularity}</p>
-          <h3>${item.type === 'movie' ? 'Overview' : "Biography"}:</h3>
+          ${info}
+          <p id="movie-release-date">${item.type === 'movie' ? 'Release Date: '
+                + item.releaseDate : 'Birth Date: '
+            + item.birthday}</p>
+          <p id="movie-runtime">${item.type === 'movie' ? 'Run Time: '
+                + item.runtime : 'Birth Place: '
+            + item.place_of_birth}</p>
+          <p id="movie-runtime">${item.type === 'movie' ? 'imbd rate ' : 'Popularity: '
+                + item.popularity}</p>
+          <p id="movie-runtime">
+          ${item.type === 'movie' ? `Languages:  
+          ${language1.name} ${language2 ? ', '
+                    + language2.name : ''} ${language3 ? ', '
+                        + language3.name : ''}` : ''}
+          </p >
+          <p id="movie-runtime">
+          ${director.length > 0 ? `Director:  ${director[0].name}` : ''}
+          </p >
+
+          
+        <h3>${item.type === 'movie' ? 'Overview' : "Biography"}:</h3>
           <p id="movie-overview">${item.type === 'movie' ? item.overview : item.biography}</p>
-        </div>
-      </div>
-      <h3>${item.type === 'movie' ? 'Actors' : 'Actor\'s Movies'}:</h3>`;
+        </div >
+      </div >
+            <h3>${item.type === 'movie' ? 'Actors' : 'Actor\'s Movies'}:</h3>`;
 
         const rowDiv = document.createElement('div')
-        rowDiv.className = 'row items-section'
-        item.credits.cast.forEach(innerItem => {
+        rowDiv.className = 'row col-lg-12 items-section'
+        item.credits.cast.slice(0, 6).forEach(innerItem => {
             const object = item.type === 'actor' ? new Movie(innerItem) : new Actor(innerItem)
             const innerDiv = document.createElement('div')
             innerDiv.className = 'col-lg-2 col-md-4 col-sm-6 col-xs-12'
             innerDiv.innerHTML = `
-    <img class="actor-profile"
+                <img class="actor-profile"
         alt="${item.type === 'actor' ? object.title : object.name}"
         src=${item.type === 'actor' ? object.backdropUrl : object.backdropProfileUrl}> 
             <h4 class="actor-name">
-        ${item.type === 'actor' ?
+                ${item.type === 'actor' ?
                     object.title : object.name}
             </h4>
               <h4 class="actor-character">${item.type === 'actor' ? '' : object.character}</h4>`;
@@ -204,6 +256,8 @@ class Movie {
         this.genres = json.genres;
         this.releaseDate = json.release_date;
         this.runtime = json.runtime + " minutes";
+        this.languages = json.spoken_languages;
+        this.companies = json.production_companies;
         this.overview = json.overview;
         this.credits = json.credits;
         this.backdropPath = json.backdrop_path;
@@ -272,11 +326,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 button.addEventListener('click', async (e) => {
                     e.target.classList.add('active')
                     if (e.target.id === 'get-movies') {
-                        document.querySelector('.genres-sections').style.display = 'block'
+                        const displayOnMovies = document.querySelectorAll('.on-movies')
+                        displayOnMovies.forEach(element => {
+                            element.style.display = 'block'
+                        })
                         const movies = await APIService.fetchMovies()
                         HomePage.render(movies);
                     } else if (e.target.id === 'get-actors') {
-                        document.querySelector('.genres-sections').style.display = 'none'
+                        const hideOnMovies = document.querySelectorAll('.on-movies')
+                        hideOnMovies.forEach(element => {
+                            element.style.display = 'none'
+                        })
                         const actors = await APIService.fetchActors()
                         HomePage.render(actors);
                     }
@@ -284,14 +344,14 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         })
     });
-
-
 })
 
 
 const getBack = async () => {
     const movies = await APIService.fetchMovies()
+    const sideBarItems = await APIService.fetchGenres()
     HomePage.render(movies);
+    HomePage.renderSideBar(sideBarItems);
     setTimeout(() => {
         const mainFlat = document.querySelector('.main');
         const sidebar = document.querySelector('#sidebar')
@@ -306,7 +366,6 @@ const searchButton = document.querySelector('#search-btn')
 searchButton.addEventListener('click', async (e) => {
     const term = document.querySelector('#term')
     const items = term.value ? await APIService.search(term.value) : null
-    console.log('items :', items);
     items ? HomePage.render(items) : null;
 })
 const input = document.querySelector('.search-bar-nav input')
@@ -317,3 +376,8 @@ input.addEventListener('keyup', async (e) => {
         items ? HomePage.render(items) : null;
     }
 })
+
+const filterByType = async () => {
+    const items = await APIService.fetchMovies()
+    HomePage.render(items);
+}
