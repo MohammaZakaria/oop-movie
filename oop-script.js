@@ -48,8 +48,15 @@ class APIService {
     }
     // recommendations
     static async fetchGenreMovies(genreId) {
-        const url = APIService._constructUrl(`discover/movie`)
+        const url = APIService._constructUrl(`genre/movie`)
         const response = await fetch(url + this.GENRES_EDN_POINT + genreId)
+        const data = await response.json()
+        return data.results.map(movie => new Movie(movie))
+    }
+
+    static async fetchGenre(genreId) {
+        const url = APIService._constructUrl(`discover/movie`)
+        const response = await fetch(url + genreId)
         const data = await response.json()
         return data.results.map(movie => new Movie(movie))
     }
@@ -82,7 +89,11 @@ class HomePage {
     static sideBar = document.getElementById('filter-genre');
     static render(array) {
         this.container.innerHTML = ''
-        array.forEach(object => {
+        array.forEach(async (object) => {
+
+            const movie = object.type === "movie" ? await APIService.fetchMovie(object.id) : []
+            console.log('movie :', movie);
+            const { genres } = movie
             const mainDiv = document.createElement("div");
             mainDiv.className = 'item box col-lg-4 col-md-6';
             const div = document.createElement("div");
@@ -90,14 +101,22 @@ class HomePage {
             const image = document.createElement("img");
             image.src = `${object.backdropUrl}`;
             const title = document.createElement("h3");
+
+            const infoDiv = document.createElement("div");
+            infoDiv.className = 'info';
+            const infoText = document.createElement("span");
+            infoText.innerText = `${object.type === 'movie' ? genres[0].name : "Popularity: " + object.popularity}`
             title.textContent = `${object.type === 'movie' ? object.title : object.name}`;
             image.addEventListener("click", function () {
                 ItemsDetails.run(object);
             });
+            // infoDiv.appendChild(visit)
 
             mainDiv.appendChild(div)
             div.appendChild(image);
             div.appendChild(title);
+            infoDiv.appendChild(infoText)
+            div.appendChild(infoDiv)
             this.container.appendChild(mainDiv);
         })
     }
@@ -114,7 +133,6 @@ class HomePage {
             });
             this.sideBar.appendChild(btn);
         })
-
     }
 }
 
