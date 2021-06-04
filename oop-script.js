@@ -92,7 +92,6 @@ class HomePage {
         array.forEach(async (object) => {
 
             const movie = object.type === "movie" ? await APIService.fetchMovie(object.id) : []
-            console.log('movie :', movie);
             const { genres } = movie
             const mainDiv = document.createElement("div");
             mainDiv.className = 'item box col-lg-4 col-md-6';
@@ -104,9 +103,12 @@ class HomePage {
 
             const infoDiv = document.createElement("div");
             infoDiv.className = 'info';
+            title.textContent = `${object.type === 'movie' ? object.title : object.name}`;
+
             const infoText = document.createElement("span");
             infoText.innerText = `${object.type === 'movie' ? genres[0].name : "Popularity: " + object.popularity}`
-            title.textContent = `${object.type === 'movie' ? object.title : object.name}`;
+            const popularityText = document.createElement("span");
+            popularityText.innerText = `${object.type === 'movie' ? object.popularity : ""}`
             image.addEventListener("click", function () {
                 ItemsDetails.run(object);
             });
@@ -116,6 +118,7 @@ class HomePage {
             div.appendChild(image);
             div.appendChild(title);
             infoDiv.appendChild(infoText)
+            infoDiv.appendChild(popularityText)
             div.appendChild(infoDiv)
             this.container.appendChild(mainDiv);
         })
@@ -218,8 +221,9 @@ class ItemSection {
           <p id="movie-runtime">${item.type === 'movie' ? 'Run Time: '
                 + item.runtime : 'Birth Place: '
             + item.place_of_birth}</p>
-          <p id="movie-runtime">${item.type === 'movie' ? 'imbd rate ' : 'Popularity: '
-                + item.popularity}</p>
+          <p id="movie-runtime">${item.type === 'movie' ? 'Popularity: '
+                + item.popularity : 'Popularity: '
+            + item.popularity}</p>
           <p id="movie-runtime">
           ${item.type === 'movie' ? `Languages:  
           ${language1.name} ${language2 ? ', '
@@ -272,6 +276,7 @@ class Movie {
         this.id = json.id;
         this.title = json.title;
         this.genres = json.genres;
+        this.popularity = json.popularity;
         this.releaseDate = json.release_date;
         this.runtime = json.runtime + " minutes";
         this.languages = json.spoken_languages;

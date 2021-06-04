@@ -296,28 +296,26 @@ header.sticky {
 }
 
 .item .info {
-  /* width: 0 !important;
-  height: 0 !important;
-  opacity: 0 !important; */
+  opacity: 0 !important;
   transition: all 0.5 ease-in-out;
-  /* position: absolute; */
-  /* top: 0; */
-  /* bottom: 0; */
-  /* right: 0;
-  left: 0; */
-  background-color: #555555b7;
+  background-color: #ffb300c0;
   padding: 10px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
 }
 
-/* .item:hover .info {
-  width: 100% !important;
-  height: 100% !important;
+.item:hover .info {
   opacity: 1 !important;
-} */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
 .info span {
   color: var(--light);
   z-index: 1;
+  padding-top: 10px;
 }
 
 .info button {
@@ -328,7 +326,6 @@ header.sticky {
   border: none;
   transition: background 0.3s ease-in-out;
   transition: color 0.3s ease-in-out;
-  /* margin-top: 60px; */
   font-size: 16px;
   width: 110px;
 }
@@ -467,6 +464,125 @@ footer {
   }
 }
 
+.colored {
+  color: var(--primary);
+}
+
+/* footer */
+
+footer .container {
+  padding-top: 0 !important;
+}
+
+.in-screen-sticky {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  transform: translate(0, -50%);
+}
+
+.in-screen-sticky button {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border-radius: 50%;
+  margin: 15px;
+  border: none;
+  outline: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: 0 0.25rem 0.25rem 0 rgba(170, 170, 170, 0.25);
+}
+
+.taji {
+  background-image: url(./assets/imgs/abd.jpg);
+}
+.moh {
+  background-image: url(./assets/imgs/moh.jpeg);
+}
+
+.in-screen-sticky button:hover {
+  box-shadow: 0 0.25rem 0.25rem 0 rgba(92, 92, 92, 0.25);
+}
+
+.social-links {
+  position: fixed;
+  background-color: lavender;
+  top: 0;
+  transform: translate(-100%, 20%);
+  display: none;
+  color: #3f3f3f;
+  text-align: left;
+  box-shadow: 0 0.25rem 0.25rem 0 rgba(92, 92, 92, 0.25);
+
+  border-radius: 5px;
+}
+
+.in-screen-sticky button:hover .social-links {
+  display: block;
+}
+
+.social-links li a {
+  font-size: 20px;
+  color: #3f3f3f;
+}
+
+.social-links li {
+  padding: 12px 18px;
+}
+
+.moh-link {
+  transform: translate(-100%, 50%);
+}
+
+.social-links li:hover {
+  opacity: 0.8;
+  background-color: var(--light);
+}
+
+/* header */
+.sub-header {
+  min-height: 250px;
+  background-image: url(./assets/imgs/subHeaders.jpg);
+}
+
+.about-content .light-bg {
+  background-color: #fff;
+}
+
+.text {
+  padding: 20px;
+}
+
+.image-about {
+  width: 100%;
+}
+
+.section {
+  padding: 60px 0;
+}
+
+.subscribe-input input {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 17px;
+  outline: none;
+  border: none;
+}
+
+.subscribe-input {
+  width: 100%;
+  overflow: hidden;
+  border: 1px #3f3f3fa6 solid;
+  border-radius: 10px;
+}
+
+.subscribe {
+  margin: 40px auto;
+}
 /* // Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
   .display-on-tablet {
