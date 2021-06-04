@@ -216,6 +216,10 @@ aside.hidden {
   }
 }
 
+.iframe {
+  width: 100%;
+}
+
 header.sticky {
   background-color: #fff;
   z-index: 9999;

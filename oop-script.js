@@ -243,8 +243,8 @@ class ItemSection {
 
         const YouTubeVideo = videos !== null && videos.length > 0 ? `
         <iframe 
-            width="560" 
-            height="315" 
+        class="iframe"
+            height="300" 
             src="https://www.youtube.com/embed/${videos[0].key}" 
             title="${videos[0].name}" 
             frameborder="0"
