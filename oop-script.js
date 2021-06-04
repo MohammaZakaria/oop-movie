@@ -272,7 +272,7 @@ class ItemSection {
                 Back To Movies
             </button>
           </div>
-        <div class="col-lg-4 col-md-4 col-xs-12 col-sm-12">
+        <div class=" col-lg-4 col-md-4 col-xs-12 col-sm-12">
           <img id="movie-backdrop" src=${item.backdropUrl}> 
           ${item.type === 'movie' ?
                 `<p class="mt-40">Production Company: ${companyName}</p>
