@@ -1,14 +1,14 @@
-// window.onscroll = function () { myFunction() };
+window.onscroll = function () { myFunction() };
 
-// var navbar = document.getElementById("navbar");
-// var sticky = navbar.offsetTop;
-// function myFunction() {
-//     if (window.pageYOffset > 0) {
-//         navbar.classList.add("sticky")
-//     } else {
-//         navbar.classList.remove("sticky");
-//     }
-// }
+var navbar = document.getElementById("navbar");
+var sticky = navbar.offsetTop;
+function myFunction() {
+    if (window.pageYOffset > 0) {
+        navbar.classList.add("sticky")
+    } else {
+        navbar.classList.remove("sticky");
+    }
+}
 // setInterval(() => {
 //     const images = document.querySelectorAll('.slide')
 //     images.forEach((img, index) => {

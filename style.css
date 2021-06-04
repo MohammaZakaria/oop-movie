@@ -164,8 +164,12 @@ a {
   padding: 3px 10px;
   height: 30px;
 }
-.links {
-  display: none;
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 50px;
 }
 
 .h-100-vh {
@@ -191,9 +195,7 @@ aside.hidden {
   width: 0 !important;
   opacity: 0;
 }
-.burger-menu {
-  display: block;
-}
+
 #back:hover {
   color: var(--primary);
   /* font-size: 28px; */
@@ -208,13 +210,9 @@ aside.hidden {
   transition: all 0.2s ease-in-out;
 }
 /* display responsively */
-@media (min-width: 1200px) {
-  .links {
+@media (min-width: 620px) {
+  .logo {
     display: block;
-  }
-
-  .burger-menu {
-    display: none;
   }
 }
 
