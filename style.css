@@ -477,10 +477,10 @@ footer .container {
 .in-screen-sticky {
   position: fixed;
   right: 0;
-  top: 50%;
+  bottom: 0;
   display: flex;
   flex-direction: column;
-  transform: translate(0, -50%);
+  transform: translate(0, -10%);
 }
 
 .in-screen-sticky button {
@@ -495,6 +495,7 @@ footer .container {
   background-repeat: no-repeat;
   background-size: cover;
   box-shadow: 0 0.25rem 0.25rem 0 rgba(170, 170, 170, 0.25);
+  opacity: 0.5;
 }
 
 .taji {
@@ -510,19 +511,51 @@ footer .container {
 
 .social-links {
   position: fixed;
-  background-color: lavender;
+  /* background-color: transparent; */
+  padding: 0 15px;
   top: 0;
-  transform: translate(-100%, 20%);
+  transform: translate(-110%, -75%);
   display: none;
+}
+
+.social-links ul {
+  background-color: lavender !important;
   color: #3f3f3f;
   text-align: left;
   box-shadow: 0 0.25rem 0.25rem 0 rgba(92, 92, 92, 0.25);
-
   border-radius: 5px;
 }
+.in-screen-sticky button:hover {
+  border: 2px rgb(126, 0, 199) solid;
+  opacity: 1;
+}
+.in-screen-sticky button:focus {
+  border: 2px rgb(126, 0, 199) solid;
+  opacity: 1;
+}
 
+.pagination {
+  margin-top: 70px;
+}
+
+.pagination div button {
+  border: none;
+  padding: 1em;
+  font-size: 1rem;
+  background-color: white;
+  border-radius: 10px;
+  margin: 5px;
+  outline: none;
+}
+
+.current {
+  color: var(--light);
+  background-color: #3f3f3f !important;
+}
 .in-screen-sticky button:hover .social-links {
   display: block;
+  opacity: 1 !important;
+  opacity: 1;
 }
 
 .social-links li a {
@@ -535,7 +568,7 @@ footer .container {
 }
 
 .moh-link {
-  transform: translate(-100%, 50%);
+  transform: translate(-110%, -45%);
 }
 
 .social-links li:hover {
@@ -565,6 +598,9 @@ footer .container {
   padding: 60px 0;
 }
 
+.hide-section {
+  display: none;
+}
 .subscribe-input input {
   width: 100%;
   padding: 10px 15px;

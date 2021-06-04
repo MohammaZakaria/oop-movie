@@ -2,9 +2,10 @@
 
 class App {
     static async run() {
-        const items = await APIService.fetchMovies()
+        const [items, pages] = await APIService.fetchMovies()
         const sideBarItems = await APIService.fetchGenres()
         HomePage.render(items);
+        HomePage.renderPagination(pages);
         HomePage.renderSideBar(sideBarItems);
     }
 }
@@ -14,12 +15,14 @@ class APIService {
     static MOVIE_EDN_POINT = '&append_to_response='
     static GENRES_EDN_POINT = '&with_genres='
     static QUERY_EDN_POINT = '&query='
-    static async fetchMovies() {
+    static async fetchMovies(nextPrevPage = 1) {
         const type = document.querySelector('#movies-type').value
         const url = APIService._constructUrl(`movie/${type === '-' ? 'now_playing' : type}`)
-        const response = await fetch(url)
+        const response = await fetch(`${url}&page=${nextPrevPage}`)
         const data = await response.json()
-        return data.results.map(movie => new Movie(movie))
+        const page = new Page(data.page, data.total_pages, 'movie')
+        const movies = data.results.map(movie => new Movie(movie))
+        return [movies, page]
     }
     static async fetchMovie(movieId) {
         const url = APIService._constructUrl(`movie/${movieId}`)
@@ -27,11 +30,13 @@ class APIService {
         const data = await response.json()
         return new Movie(data)
     }
-    static async fetchActors() {
+    static async fetchActors(nextPrevPage = 1) {
         const url = APIService._constructUrl(`person/popular`)
-        const response = await fetch(url)
+        const response = await fetch(`${url}&page=${nextPrevPage}`)
         const data = await response.json()
-        return data.results.map(actor => new Actor(actor))
+        const page = new Page(data.page, data.total_pages, 'actor')
+        const actors = data.results.map(actor => new Actor(actor))
+        return [actors, page]
     }
 
     static async fetchActor(actorId) {
@@ -61,6 +66,22 @@ class APIService {
         return data.results.map(movie => new Movie(movie))
     }
 
+
+    static async fetchVideo(movie_id) {
+        const url = APIService._constructUrl(`movie/${movie_id}/videos`)
+        const response = await fetch(url)
+        const data = await response.json()
+        return data.results
+    }
+
+
+    static async fetchSimilarMovies(movie_id) {
+        const url = APIService._constructUrl(`/movie/${movie_id}/similar`)
+        const response = await fetch(url)
+        const data = await response.json()
+        return data.results.map(movie => new Movie(movie))
+    }
+
     static async search(term) {
         const treatedTerm = term.replace(' ', '+')
         const movieUrl = APIService._constructUrl(`search/movie`)
@@ -71,11 +92,6 @@ class APIService {
         const actorData = await actorResponse.json()
         const movies = movieData.results.map(movie => new Movie(movie))
         const actors = actorData.results.map(actor => new Actor(actor))
-        // const main = [...movies, ...actors]
-        // const result = []
-        // main.forEach((item, index) => {
-        //     result.push(actors[index], movies[index])
-        // })
         return [...movies, ...actors]
     }
 
@@ -87,6 +103,8 @@ class APIService {
 class HomePage {
     static container = document.getElementById('container');
     static sideBar = document.getElementById('filter-genre');
+    static pagesContainer = document.getElementById('pages');
+
     static render(array) {
         this.container.innerHTML = ''
         array.forEach(async (object) => {
@@ -137,15 +155,43 @@ class HomePage {
             this.sideBar.appendChild(btn);
         })
     }
+
+    static renderPagination(page) {
+        document.querySelector('#pages').classList.remove('hide-section');
+        const current = page.current_page
+        const type = page.object_type
+        const total = page.total_pages
+        this.pagesContainer.innerHTML = ''
+        const paginationButtons = document.createElement('div')
+        for (let index = 1; index <= total; index++) {
+            const button = document.createElement('button')
+            button.className = `${index === current ? 'current' : ''}`
+            button.innerText = index
+            button.addEventListener('click', async () => {
+                const [items, pages] = type === 'movie' ? await APIService.fetchMovies(index) : await APIService.fetchActors(index)
+                CardsWithPages.run(items, pages)
+            })
+            paginationButtons.appendChild(button);
+        }
+        this.pagesContainer.appendChild(paginationButtons);
+    }
 }
+
+class CardsWithPages {
+    static async run(items, pages) {
+        HomePage.render(items);
+        HomePage.renderPagination(pages);
+    }
+}
+
 
 class FilterItems {
     static async run(object) {
+        document.querySelector('#pages').classList.remove('hide-section');
         const items = await APIService.fetchGenreMovies(object.id)
         HomePage.render(items);
     }
 }
-
 
 class ItemsDetails {
     static async run(object) {
@@ -168,7 +214,11 @@ class ItemPage {
 // ${item.languages[2] ? `, ${item.languages[2].name} ` 
 
 class ItemSection {
-    static renderItem(item) {
+    static async renderItem(item) {
+        const videos = item.type === 'movie' ? await APIService.fetchVideo(item.id) : null
+        const similar = item.type === 'movie' ? await APIService.fetchSimilarMovies(item.id) : []
+        document.querySelector('#pages').classList.add('hide-section');
+
         const mainFlat = document.querySelector('.main');
         mainFlat.querySelector('#sidebar').classList.add('hidden')
         const mainView = mainFlat.querySelector('.cards')
@@ -189,6 +239,23 @@ class ItemSection {
                 logo_url = `http://image.tmdb.org/t/p/w780${item.companies[0].logo_path}`
             }
         }
+
+
+        const YouTubeVideo = videos !== null && videos.length > 0 ? `
+        <iframe 
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/${videos[0].key}" 
+            title="${videos[0].name}" 
+            frameborder="0"
+            allow="accelerometer; 
+            autoplay; 
+            clipboard-write; 
+            encrypted-media; 
+            gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+        ` : ''
         const info =
             `<p id="genres">
                 ${item.type === 'movie' ? `Genre:  ${item.genres[0].name} ${item.genres[1] ? `/ ${item.genres[1].name} ` : ''}
@@ -198,7 +265,7 @@ class ItemSection {
                     'Gender: ' + `<i class="fas fa-mars"></i>
             </p>`}`
 
-        ItemPage.container.innerHTML = `<div class="row" >
+        ItemPage.container.innerHTML = `<div class="row">
         <div class="col-lg-12 mtb-40">
             <button onclick="getBack()" id="back">
                 <i class="fas fa-arrow-left"></i>
@@ -237,6 +304,10 @@ class ItemSection {
           
         <h3>${item.type === 'movie' ? 'Overview' : "Biography"}:</h3>
           <p id="movie-overview">${item.type === 'movie' ? item.overview : item.biography}</p>
+
+          <div>
+          ${YouTubeVideo}
+          </div>
         </div >
       </div >
             <h3>${item.type === 'movie' ? 'Actors' : 'Actor\'s Movies'}:</h3>`;
@@ -248,22 +319,48 @@ class ItemSection {
             const innerDiv = document.createElement('div')
             innerDiv.className = 'col-lg-2 col-md-4 col-sm-6 col-xs-12'
             innerDiv.innerHTML = `
-                <img class="actor-profile"
-        alt="${item.type === 'actor' ? object.title : object.name}"
-        src=${item.type === 'actor' ? object.backdropUrl : object.backdropProfileUrl}> 
-            <h4 class="actor-name">
-                ${item.type === 'actor' ?
+                    <img class="actor-profile"
+            alt="${item.type === 'actor' ? object.title : object.name}"
+            src=${item.type === 'actor' ? object.backdropUrl : object.backdropProfileUrl}> 
+                <h4 class="actor-name">
+                    ${item.type === 'actor' ?
                     object.title : object.name}
-            </h4>
-              <h4 class="actor-character">${item.type === 'actor' ? '' : object.character}</h4>`;
+                </h4>
+                  <h4 class="actor-character">${item.type === 'actor' ? '' : object.character}</h4>`;
             innerDiv.addEventListener("click", function () {
                 ItemsDetails.run(object);
             });
             rowDiv.appendChild(innerDiv)
         })
 
-
         ItemPage.container.appendChild(rowDiv)
+
+
+        const mainDiv = document.createElement('div')
+        mainDiv.className = `row col-lg-12 ${item.type === 'movie' ? '' : 'hide-section'} `
+        mainDiv.innerHTML = `<h3>${item.type === 'movie' ? 'Similar Movies:' : ''}</h3>`
+        const similarRowDiv = document.createElement('div')
+        similarRowDiv.className = `row col-lg-12 items-section`
+        similar.slice(0, 6).forEach(innerItem => {
+            const object = innerItem
+            const innerDiv = document.createElement('div')
+            innerDiv.className = 'col-lg-2 col-md-4 col-sm-6 col-xs-12'
+            innerDiv.innerHTML = `
+                    <img class="actor-profile"
+            alt="${item.type === 'movie' ? object.title : ''}"
+            src=${item.type === 'movie' ? object.backdropUrl : ''}> 
+                <h4 class="actor-name">
+                    ${item.type === 'movie' ?
+                    object.title : ''}
+                </h4>`;
+            innerDiv.addEventListener("click", function () {
+                ItemsDetails.run(object);
+            });
+            similarRowDiv.appendChild(innerDiv)
+            mainDiv.appendChild(similarRowDiv)
+        })
+
+        ItemPage.container.appendChild(mainDiv)
     }
 }
 
@@ -316,6 +413,17 @@ class Actor {
 }
 
 
+class Page {
+    constructor(page, total_pages, object_type) {
+        this.type = 'page';
+        this.object_type = object_type;
+        this.current_page = page;
+        this.total_pages = total_pages;
+    }
+}
+
+
+
 class Genre {
     constructor(json) {
         this.type = 'genre';
@@ -340,40 +448,65 @@ class Toggle {
 }
 
 
-document.addEventListener("DOMContentLoaded", () => {
-    const filterButtons = document.querySelectorAll('#filter-movieActor button')
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            filterButtons.forEach(button => {
-                button.classList.remove('active')
-                button.addEventListener('click', async (e) => {
-                    e.target.classList.add('active')
-                    if (e.target.id === 'get-movies') {
-                        const displayOnMovies = document.querySelectorAll('.on-movies')
-                        displayOnMovies.forEach(element => {
-                            element.style.display = 'block'
-                        })
-                        const movies = await APIService.fetchMovies()
-                        HomePage.render(movies);
-                    } else if (e.target.id === 'get-actors') {
-                        const hideOnMovies = document.querySelectorAll('.on-movies')
-                        hideOnMovies.forEach(element => {
-                            element.style.display = 'none'
-                        })
-                        const actors = await APIService.fetchActors()
-                        HomePage.render(actors);
-                    }
-                })
-            })
-        })
-    });
+// document.addEventListener("DOMContentLoaded", () => {
+//     const filterButtons = document.querySelectorAll('#filter-movieActor button')
+//     filterButtons.forEach(button => {
+//         button.addEventListener('click', () => {
+//             filterButtons.forEach(button => {
+//                 button.classList.remove('active')
+//                 button.addEventListener('click', async (e) => {
+//                     e.target.classList.add('active')
+//                     if (e.target.id === 'get-movies') {
+//                         const displayOnMovies = document.querySelectorAll('.on-movies')
+//                         displayOnMovies.forEach(element => {
+//                             element.style.display = 'block'
+//                         })
+//                         const [items, pages] = await APIService.fetchMovies()
+//                         CardsWithPages.run(items, pages)
+//                     } else if (e.target.id === 'get-actors') {
+//                         const hideOnMovies = document.querySelectorAll('.on-movies')
+//                         hideOnMovies.forEach(element => {
+//                             element.style.display = 'none'
+//                         })
+//                         const [items, pages] = await APIService.fetchActors()
+//                         CardsWithPages.run(items, pages)
+//                     }
+//                 })
+//             })
+//         })
+//     });
+// })
+
+
+const getMoviesBtn = document.querySelector('#get-movies')
+const getActorsBtn = document.querySelector('#get-actors')
+getMoviesBtn.classList.add('active')
+
+getMoviesBtn.addEventListener('click', async () => {
+    getActorsBtn.classList.remove('active');
+    getMoviesBtn.classList.add('active')
+    const displayOnMovies = document.querySelectorAll('.on-movies')
+    displayOnMovies.forEach(element => {
+        element.style.display = 'block'
+    })
+    const [items, pages] = await APIService.fetchMovies()
+    CardsWithPages.run(items, pages)
+})
+getActorsBtn.addEventListener('click', async () => {
+    getMoviesBtn.classList.remove('active');
+    getActorsBtn.classList.add('active')
+    const hideOnMovies = document.querySelectorAll('.on-movies')
+    hideOnMovies.forEach(element => {
+        element.style.display = 'none'
+    })
+    const [items, pages] = await APIService.fetchActors()
+    CardsWithPages.run(items, pages)
 })
 
-
 const getBack = async () => {
-    const movies = await APIService.fetchMovies()
+    const [items, pages] = await APIService.fetchMovies()
     const sideBarItems = await APIService.fetchGenres()
-    HomePage.render(movies);
+    CardsWithPages.run(items, pages)
     HomePage.renderSideBar(sideBarItems);
     setTimeout(() => {
         const mainFlat = document.querySelector('.main');
@@ -387,12 +520,15 @@ const getBack = async () => {
 
 const searchButton = document.querySelector('#search-btn')
 searchButton.addEventListener('click', async (e) => {
+    document.querySelector('#pages').classList.add('hide-section');
     const term = document.querySelector('#term')
     const items = term.value ? await APIService.search(term.value) : null
     items ? HomePage.render(items) : null;
 })
 const input = document.querySelector('.search-bar-nav input')
 input.addEventListener('keyup', async (e) => {
+    document.querySelector('#pages').classList.add('hide-section');
+
     if (e.keyCode === 13) {
         const term = document.querySelector('#term')
         const items = term.value ? await APIService.search(term.value) : null
@@ -401,6 +537,6 @@ input.addEventListener('keyup', async (e) => {
 })
 
 const filterByType = async () => {
-    const items = await APIService.fetchMovies()
-    HomePage.render(items);
+    const [items, pages] = await APIService.fetchMovies()
+    CardsWithPages.run(items, pages)
 }
