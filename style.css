@@ -297,6 +297,20 @@ header.sticky {
   transform: scale(1.1, 1.1);
 }
 
+.scale-on-hover {
+  transition: all 0.25s ease-in-out;
+  cursor: pointer;
+}
+
+.scale-on-hover:hover {
+  transform: scale(1.1, 1.1);
+  /* box-shadow: 0 0.25rem 0.25rem 0 rgba(170, 170, 170, 0.25); */
+}
+
+.scale-on-hover:hover img {
+  border: 2px rgb(126, 0, 199) solid;
+}
+
 .item .info {
   opacity: 0 !important;
   transition: all 0.5 ease-in-out;
@@ -343,6 +357,7 @@ header.sticky {
   overflow: hidden;
   box-shadow: 0 0.25rem 0.25rem 0 rgba(170, 170, 170, 0.25);
   transition: all 0.3s ease-in-out;
+  border: none;
 }
 .thumbnail:hover {
   transform: translateY(-2%);

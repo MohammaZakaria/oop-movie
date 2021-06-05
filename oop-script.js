@@ -317,7 +317,7 @@ class ItemSection {
         item.credits.cast.slice(0, 6).forEach(innerItem => {
             const object = item.type === 'actor' ? new Movie(innerItem) : new Actor(innerItem)
             const innerDiv = document.createElement('div')
-            innerDiv.className = 'col-lg-2 col-md-4 col-sm-6 col-xs-12'
+            innerDiv.className = 'col-lg-2 col-md-4 col-sm-6 col-xs-12 scale-on-hover'
             innerDiv.innerHTML = `
                     <img class="actor-profile"
             alt="${item.type === 'actor' ? object.title : object.name}"
@@ -344,7 +344,7 @@ class ItemSection {
         similar.slice(0, 6).forEach(innerItem => {
             const object = innerItem
             const innerDiv = document.createElement('div')
-            innerDiv.className = 'col-lg-2 col-md-4 col-sm-6 col-xs-12'
+            innerDiv.className = 'col-lg-2 col-md-4 col-sm-6 col-xs-12 scale-on-hover'
             innerDiv.innerHTML = `
                     <img class="actor-profile"
             alt="${item.type === 'movie' ? object.title : ''}"
