@@ -380,7 +380,7 @@ class Movie {
         this.companies = json.production_companies;
         this.overview = json.overview;
         this.credits = json.credits;
-        this.backdropPath = json.backdrop_path;
+        this.backdropPath = json.poster_path;
     }
 
     get backdropUrl() {
